@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidya - Native macOS yt-dlp Frontend</title>
+    <meta name="description" content="A lightweight, fast, native macOS desktop application for yt-dlp written in C and Raylib.">
+    <style>
+        :root {
+            --bg: #f4f3ef;
+            --fg: #161616;
+            --muted: #6e6e6e;
+            --accent: #3727b2;
+            --accent-hover: #1e127c;
+            --border: #dcdad4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.65;
+            padding: 48px 24px;
+            max-width: 680px;
+            margin: 0 auto;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: var(--fg);
+            vertical-align: middle;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .divider {
+            color: var(--border);
+            margin: 24px 0;
+            user-select: none;
+            font-weight: bold;
+        }
+
+        section {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            row-gap: 4px;
+        }
+
+        .meta-key {
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+        }
+
+        li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--muted);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        .download-box {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-top: 10px;
+        }
+
+        .download-item {
+            margin-bottom: 10px;
+        }
+
+        .download-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .download-title {
+            font-weight: bold;
+        }
+
+        .download-desc {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.04);
+            padding: 14px;
+            overflow-x: auto;
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #111;
+        }
+
+        footer {
+            margin-top: 48px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>VIDYA <span class="cursor"></span></h1>
+        <p class="subtitle">A fast, minimal macOS GUI for yt-dlp</p>
+    </header>
+
+    <div class="divider">~~~</div>
+
+    <section>
+        <h2>System Info</h2>
+        <div class="meta-grid">
+            <span class="meta-key">Version</span>
+            <span>0.1.0</span>
+            <span class="meta-key">Target OS</span>
+            <span>macOS 12.0+ (Universal ARM64 / Intel)</span>
+            <span class="meta-key">Engine</span>
+            <span>C11 + Raylib + yt-dlp</span>
+            <span class="meta-key">License</span>
+            <span>MIT</span>
+        </div>
+    </section>
+
+    <div class="divider">~~~</div>
+
+    <section>
+        <h2>Overview</h2>
+        <p>Vidya is a clean, distraction-free native desktop application for downloading videos and audio from YouTube and thousands of supported websites. Built directly in C with Raylib, it delivers instant startup times and low resource usage without Electron or web framework overhead.</p>
+    </section>
+
+    <div class="divider">~~~</div>
+
+    <section>
+        <h2>Downloads</h2>
+        <p>Latest Release (v0.1.0):</p>
+
+        <div class="download-box">
+            <div class="download-item">
+                <div class="download-title">
+                    <a href="https://downloads.vidya.app/vidya-0.1.0.pkg">macOS Installer Package (.pkg)</a>
+                </div>
+                <div class="download-desc">Recommended for standard installation into /Applications</div>
+            </div>
+            <div style="margin: 12px 0; border-top: 1px dashed var(--border);"></div>
+            <div class="download-item">
+                <div class="download-title">
+                    <a href="https://downloads.vidya.app/vidya-0.1.0.zip">Portable Application (.zip)</a>
+                </div>
+                <div class="download-desc">Standalone .app bundle archive</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider">~~~</div>
+
+    <section>
+        <h2>Key Features</h2>
+        <ul>
+            <li>Bundled <code>yt-dlp</code>, <code>ffmpeg</code>, and <code>ffprobe</code> binaries out of the box</li>
+            <li>Multi-resolution video downloading (1080p, 720p, 480p, or maximum available quality)</li>
+            <li>High-quality audio extraction (MP3, M4A, FLAC, WAV, OPUS)</li>
+            <li>Support for subtitle downloads, thumbnail embedding, and metadata tags</li>
+            <li>Customizable output destination folders and output filename templates</li>
+        </ul>
+    </section>
+
+    <div class="divider">~~~</div>
+
+    <section>
+        <h2>Compilation</h2>
+        <p>To compile the macOS bundle locally from source:</p>
+        <pre>git clone https://github.com/your-username/vidya.git
+cd vidya/ytdlp-gui
+brew install raylib pkg-config
+make macos-app</pre>
+    </section>
+
+    <div class="divider">~~~</div>
+
+    <section>
+        <h2>Resources</h2>
+        <ul>
+            <li><a href="https://github.com/your-username/vidya">Source Code Repository</a></li>
+            <li><a href="https://github.com/your-username/vidya/issues">Issue & Bug Tracker</a></li>
+            <li><a href="https://github.com/yt-dlp/yt-dlp">yt-dlp Project Page</a></li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>Vidya — Open Source macOS Downloader</p>
+    </footer>
+
+</body>
+</html>

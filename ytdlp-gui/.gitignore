@@ -1,0 +1,6 @@
+*.o
+ytdlp-gui
+yt-dlp
+yt-dlp.exe
+.DS_Store
+dist/
