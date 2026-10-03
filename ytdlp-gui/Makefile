@@ -50,4 +50,7 @@ clean:
 test:
 	sh tests/run.sh
 
-.PHONY: test
+test-media:
+	uv run --no-project python tests/media.py
+
+.PHONY: test test-media

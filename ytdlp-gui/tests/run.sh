@@ -42,4 +42,31 @@ for scenario in rate disk; do
     env HOME="$test_dir" SCENARIO="$scenario" "$test_dir/test" terminal
     test "$(grep -c '^ATTEMPT$' "$test_dir/arguments")" = 1
 done
+for mode in wav mp3 original mkv; do
+    : > "$test_dir/arguments"
+    env HOME="$test_dir" SCENARIO=format "$test_dir/test" "$mode"
+    case "$mode" in
+        wav)
+            grep -qx 'wav' "$test_dir/arguments"
+            grep -qx 'ExtractAudio+ffmpeg_o:-c:a pcm_s24le -ac 2 -ar 48000' "$test_dir/arguments"
+            grep -qx -- '--convert-thumbnails' "$test_dir/arguments"
+            if grep -qx -- '--audio-quality' "$test_dir/arguments"; then exit 1; fi
+            if grep -qx -- '--embed-thumbnail' "$test_dir/arguments"; then exit 1; fi
+            ;;
+        mp3)
+            grep -qx 'mp3' "$test_dir/arguments"
+            grep -qx '320K' "$test_dir/arguments"
+            ;;
+        original)
+            if grep -qx 'wav' "$test_dir/arguments"; then exit 1; fi
+            if grep -qx -- '--audio-quality' "$test_dir/arguments"; then exit 1; fi
+            ;;
+        mkv)
+            grep -qx -- '--recode-video' "$test_dir/arguments"
+            grep -qx 'mkv' "$test_dir/arguments"
+            grep -qx 'jpg' "$test_dir/arguments"
+            ;;
+    esac
+    test "$(grep -c '^ATTEMPT$' "$test_dir/arguments")" = 2
+done
 printf 'Downloader integration tests passed.\n'

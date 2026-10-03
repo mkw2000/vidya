@@ -16,6 +16,7 @@ typedef struct AppState {
     char output_dir[1024];
     char filename_template[512];
     bool audio_only;
+    bool convert_output;
     int quality_index;
     int audio_format_index;
     int audio_quality_index;
@@ -112,6 +113,7 @@ static void start_download(AppState *app) {
     snprintf(app->downloader.output_dir, sizeof(app->downloader.output_dir), "%s", app->output_dir);
     snprintf(app->downloader.filename_template, sizeof(app->downloader.filename_template), "%s", app->filename_template);
     app->downloader.audio_only = app->audio_only;
+    app->downloader.convert_output = app->convert_output;
     app->downloader.quality_index = app->quality_index;
     app->downloader.audio_format_index = app->audio_format_index;
     app->downloader.audio_quality_index = app->audio_quality_index;
@@ -137,6 +139,9 @@ int main(void) {
     AppState app = {0};
     set_default_output_dir(app.output_dir, sizeof(app.output_dir));
     app.embed_metadata = true;
+    app.convert_output = true;
+    app.audio_format_index = 6; // WAV for direct use in a DAW.
+    app.video_container_index = 1; // H.264 MP4.
     app.url_edit = true;
     downloader_init(&app.downloader);
 
@@ -175,7 +180,14 @@ int main(void) {
             app.url_edit = true;
         }
         GuiCheckBox((Rectangle){margin, 143, 22, 22}, "Audio only", &app.audio_only);
-        GuiLabel((Rectangle){margin + 170, 141, 450, 24}, "Best available quality, automatically");
+        GuiCheckBox((Rectangle){margin + 170, 143, 22, 22}, "Convert to", &app.convert_output);
+        if (!app.convert_output) GuiDisable();
+        if (app.audio_only) {
+            GuiComboBox((Rectangle){margin + 300, 139, 200, 30}, "Original;M4A;MP3;Opus;AAC;FLAC;WAV (Ableton)", &app.audio_format_index);
+        } else {
+            GuiComboBox((Rectangle){margin + 300, 139, 200, 30}, "Original;MP4 (H.264);MKV;WebM", &app.video_container_index);
+        }
+        if (!is_downloading) GuiEnable();
         GuiLabel((Rectangle){margin, 170, 250, 24}, "Save to");
         if (GuiTextBox(output_bounds, app.output_dir, sizeof(app.output_dir), app.output_edit && !is_downloading)) app.output_edit = false;
         if (GuiButton((Rectangle){margin + content_width - 114, 196, 114, 34}, "Choose...")) choose_folder(app.output_dir, sizeof(app.output_dir));
@@ -188,20 +200,20 @@ int main(void) {
             if (is_downloading) GuiDisable();
             float y = 296;
             if (app.audio_only) {
-                GuiLabel((Rectangle){margin, y, 70, 24}, "Format");
-                GuiComboBox((Rectangle){margin + 80, y, 145, 30}, "best;m4a;mp3;opus;aac;flac;wav", &app.audio_format_index);
-                GuiLabel((Rectangle){margin + 250, y, 80, 24}, "Bitrate");
-                GuiComboBox((Rectangle){margin + 330, y, 130, 30}, "best;320K;192K;128K;64K", &app.audio_quality_index);
+                GuiLabel((Rectangle){margin, y, 70, 24}, "Bitrate");
+                if (!app.convert_output || app.audio_format_index == 0 || app.audio_format_index >= 5) GuiDisable();
+                GuiComboBox((Rectangle){margin + 80, y, 145, 30}, "best;320K;192K;128K;64K", &app.audio_quality_index);
+                if (!is_downloading) GuiEnable();
             } else {
                 GuiLabel((Rectangle){margin, y, 70, 24}, "Quality");
                 GuiComboBox((Rectangle){margin + 80, y, 145, 30}, "best;1080p;720p;480p;worst", &app.quality_index);
-                GuiLabel((Rectangle){margin + 250, y, 100, 24}, "Container");
-                GuiComboBox((Rectangle){margin + 350, y, 125, 30}, "auto;mp4;mkv;webm", &app.video_container_index);
-                GuiCheckBox((Rectangle){margin + 520, y + 4, 22, 22}, "Subtitles", &app.download_subs);
+                GuiCheckBox((Rectangle){margin + 250, y + 4, 22, 22}, "Subtitles", &app.download_subs);
             }
             y += 44;
             GuiCheckBox((Rectangle){margin, y, 22, 22}, "Metadata", &app.embed_metadata);
-            GuiCheckBox((Rectangle){margin + 145, y, 22, 22}, app.audio_only ? "Cover art" : "Thumbnail", &app.embed_thumbnail);
+            bool cover_art = app.audio_only && app.convert_output &&
+                (app.audio_format_index == 1 || app.audio_format_index == 2 || app.audio_format_index == 3 || app.audio_format_index == 5);
+            GuiCheckBox((Rectangle){margin + 145, y, 22, 22}, cover_art ? "Cover art" : "Thumbnail", &app.embed_thumbnail);
             GuiCheckBox((Rectangle){margin + 290, y, 22, 22}, "Playlist", &app.download_playlist);
             GuiCheckBox((Rectangle){margin + 420, y, 22, 22}, "Continue on errors", &app.ignore_errors);
             y += 40;

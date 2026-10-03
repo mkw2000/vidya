@@ -11,6 +11,7 @@ typedef struct Downloader {
     char output_dir[1024];
     char filename_template[512];
     bool audio_only;
+    bool convert_output;
     int quality_index;
     int audio_format_index;
     int audio_quality_index;
